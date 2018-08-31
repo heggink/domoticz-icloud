@@ -2,10 +2,6 @@
 iCloud device location python plugin for Domoticz
 This plugin requires installation of pyicloud and geopy to work
 
-On invocation, it creates 2 devices:
-- On/Off device depending on whether the iCloud device is at the domoticz location (coordinates specied in the domoticz settings)
-- Distance device with the geographical distance from the device to domoticz (in cm)
-
 Create a hardware device per iCloud device to be monitored 
 
 Ensure that the devices are listed under Friends in your iCloud account
@@ -22,6 +18,7 @@ Ensure that the devices are listed under Friends in your iCloud account
 ## Devices
 | Name | Description |
 | :--- | :--- |
-| **BTH device** | A switch indicating whether one of the specified mac adresses was seen on the Domoticz network |
+| **On/Off device** | Depending on whether the iCloud device is at the domoticz location (coordinates specied in the domoticz settings) |
+| **Distance device** | with the geographical distance from the device to domoticz (in cm) |
 
 ## To do
