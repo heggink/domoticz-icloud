@@ -1,5 +1,5 @@
 """
-<plugin key="AppleDevices" name="Apple iCloud Device Presence" author="heggink" version="0.0.1">
+<plugin key="AppleDevices" name="Apple iCloud Device Presence" author="heggink" version="0.0.2">
     <params>
         <param field="Username" label="Apple user name" width="150px" required="true" default="username"/>
         <param field="Password" label="Apple Password" width="150px" required="true" default="password"/>
@@ -36,26 +36,12 @@ class BasePlugin:
         self.home = (0, 0)
         self.circleLatitude = 0
         self.circleLongitude = 0
-        self.away = (5, 3)
+        self.away = (1, 1)
         self.mindist = 0.1
         self.lastloc = 0
         self.lastdist = 100000000
         self.difdist = 0
         self.count = 0
-        return
-
-    def updatedomo(dist):
-        Domoticz.Debug('Update dist: ' + str(self.difdist))
-        UpdateDevice(2,1, str( dist * 1609))
-        if dist <= self.mindist:
-            Domoticz.Debug('Switching device ON: ' + self.deviceName)
-            UpdateDevice(1,1,'On')
-        else:
-            if (self.lastdist > self.mindist) and (self.lastdist != 100000000):
-                Domoticz.Debug('Device OFF but already reported OFF so no action: ' + self.deviceName)
-            else:
-                Domoticz.Debug('Switching device OFF: ' + self.deviceName)
-                UpdateDevice(1,0,'Off')
         return
 
     def onStart(self):
@@ -100,13 +86,14 @@ class BasePlugin:
         else:
             for rdev in api.devices:
                 dev = str(rdev)
-                Domoticz.Debug('Iterating device: ' + dev)
+                Domoticz.Debug('Iterating device: [' + dev + ']' + ' to find [' + self.deviceName + ']')
                 if self.deviceName in dev:
-                        Domoticz.Debug(dev + ' matches ' + self.deviceName)
-                        Domoticz.Device(Name='GFC', Unit=1, TypeName="Switch", Image=iconPID, Used=1).Create()
-                        Domoticz.Device(Name='Distance', Unit=2, TypeName="Distance", Used=1).Create()
-                        Domoticz.Debug(str(self.deviceName))
-                        Domoticz.Debug("Devices created.")
+                        if 1 and 2 not in Devices:
+                                Domoticz.Debug(dev + ' matches ' + self.deviceName)
+                                Domoticz.Device(Name='GFC', Unit=1, TypeName="Switch", Image=iconPID, Used=1).Create()
+                                Domoticz.Device(Name='Distance', Unit=2, TypeName="Distance", Used=1).Create()
+                                Domoticz.Debug(str(self.deviceName))
+                                Domoticz.Debug("Devices created.")
 
         self.pollPeriod = int(int(Parameters["Mode2"]) / 10)
         self.pollCount = self.pollPeriod - 1
@@ -148,23 +135,22 @@ class BasePlugin:
             api = PyiCloudService(self.username, self.password)
             for rdev in api.devices:
                 dev = str(rdev)
-                Domoticz.Debug('Iterating device: ' + dev)
-                if self.deviceName in dev:
+                Domoticz.Debug('Iterating device: [' + dev + ']' + ' to find [' + self.deviceName + ']')
+                if self.deviceName == dev:
                     curr_loc = rdev.location()
                     if curr_loc is None:
                         Domoticz.log('Unable to find location for ' + dev)
                         dist = vincenty(self.home,away).miles
 
                     else:
-                        curr_loc_set = (curr_loc['latitude'],curr_loc['longitude'])
-                        dist = vincenty(self.home,curr_loc_set).miles
-                        Domoticz.Debug('I got location for ' + self.deviceName + ' of lat: ' + str(curr_loc['latitude']) + ', long: ' + ', ' + str(curr_loc['longitude']) + ' Finished: ' + str(curr_loc['locationFinished']) + ', Distance: ' + str(dist) + ' miles')
                         latitude = float(curr_loc['latitude'])
                         longitude = float(curr_loc['longitude'])
                         current = (latitude,longitude)
                         dist = vincenty(self.home,current).miles
                         self.difdist = abs(dist - self.lastdist)
                         self.count = self.count + 1
+#                       Domoticz.Debug('I got location for ' + self.deviceName + ' of lat: ' + current['latitude'] + ', long: ' + ', ' + current['longitude'] + ' Finished: ' + str(curr_loc['locationFinished']) + ', Distance: ' + str(dist) + ' miles')
+                        Domoticz.Debug('I got location for ' + self.deviceName + ' of lat: ' + str(latitude) + ', long: ' + ', ' + str(longitude) + ' Finished: ' + str(curr_loc['locationFinished']) + ', Distance: ' + str(dist) + ' miles')
 
                         if self.lastdist == 100000000:
                             Domoticz.Debug('Starting up so update location')
