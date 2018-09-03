@@ -7,6 +7,7 @@ Create a hardware device per iCloud device to be monitored
 Ensure that the devices are listed under Friends in your iCloud account
 
 ## NOT TESTED FOR 2FA although pyicloud supposedly supports it
+## ONLY TESTED FOR Rapberry Pi
 
 ## Parameters
 | Parameter | Description |
